@@ -9,7 +9,12 @@ const StackLayout = () => {
       screenOptions={{
         headerShown: false,
       }}
-    ></Stack>
+    >
+      <Stack.Screen
+        name="(modals)/profileModal"
+        options={{ presentation: "modal" }}
+      ></Stack.Screen>
+    </Stack>
   );
 };
 
