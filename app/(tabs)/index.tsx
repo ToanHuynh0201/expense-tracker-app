@@ -43,7 +43,7 @@ const Home = () => {
                     </View>
 
                     <TransactionList
-                        data={[1, 2, 3, 4, 5, 6, 7]}
+                        data={[]}
                         loading={false}
                         emptyListMessage="No Transactions added yet!"
                         title="Recent Transaction"
@@ -52,7 +52,7 @@ const Home = () => {
 
                 <Button
                     style={styles.floatingButton}
-                    onPress={() => router.push("/(modals)/TransactionModal")}
+                    onPress={() => router.push("/(modals)/transactionModal")}
                 >
                     <Icons.Plus
                         color={colors.black}
