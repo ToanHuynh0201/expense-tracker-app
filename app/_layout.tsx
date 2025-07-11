@@ -12,11 +12,30 @@ const StackLayout = () => {
         >
             <Stack.Screen
                 name="(modals)/profileModal"
-                options={{ presentation: "modal" }}
+                options={{
+                    presentation: "modal",
+                    headerShown: false,
+                    animation: "slide_from_bottom",
+                    gestureEnabled: true,
+                }}
             ></Stack.Screen>
             <Stack.Screen
                 name="(modals)/walletModal"
-                options={{ presentation: "modal" }}
+                options={{
+                    presentation: "modal",
+                    headerShown: false,
+                    animation: "slide_from_bottom",
+                    gestureEnabled: true,
+                }}
+            ></Stack.Screen>
+            <Stack.Screen
+                name="(modals)/transactionModal"
+                options={{
+                    presentation: "modal",
+                    headerShown: false,
+                    animation: "slide_from_bottom",
+                    gestureEnabled: true,
+                }}
             ></Stack.Screen>
         </Stack>
     );
