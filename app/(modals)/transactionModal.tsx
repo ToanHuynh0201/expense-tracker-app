@@ -9,6 +9,7 @@ import { expenseCategories, transactionTypes } from "@/constants/data";
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAuth } from "@/contexts/authContext";
 import useFetchData from "@/hooks/useFetchData";
+import { createOrUpdateTransaction } from "@/services/transactionService";
 import { deleteWallet } from "@/services/walletService";
 import { TransactionType, WalletType } from "@/types";
 import { scale, verticalScale } from "@/utils/styling";
@@ -73,8 +74,6 @@ const TransactionModal = () => {
             Alert.alert("Transaction", "Please fill all the fields");
             return;
         }
-
-        console.log("Good to go");
         let transactionData: TransactionType = {
             type,
             amount,
@@ -86,7 +85,16 @@ const TransactionModal = () => {
             uid: user?.uid,
         };
 
-        console.log("Transaction data: ", transactionData);
+        //todo: include transaction id for updating
+        setLoading(true);
+        const res = await createOrUpdateTransaction(transactionData);
+        setLoading(false);
+
+        if (res.success) {
+            router.back();
+        } else {
+            Alert.alert("Transaction", res.msg);
+        }
     };
 
     const onDelete = async () => {

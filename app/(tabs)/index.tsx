@@ -5,14 +5,29 @@ import TransactionList from "@/components/TrasactionList";
 import Typo from "@/components/Typo";
 import { colors, spacingX, spacingY } from "@/constants/theme";
 import { useAuth } from "@/contexts/authContext";
+import useFetchData from "@/hooks/useFetchData";
+import { TransactionType } from "@/types";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
+import { limit, orderBy, where } from "firebase/firestore";
 import * as Icons from "phosphor-react-native";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const Home = () => {
     const { user } = useAuth();
     const router = useRouter();
+    const constraints = [
+        where("uid", "==", user?.uid),
+        orderBy("date", "desc"),
+        limit(30),
+    ];
+
+    const {
+        data: recentTransactions,
+        error,
+        loading: transactionLoading,
+    } = useFetchData<TransactionType>("transactions", constraints);
+
     return (
         <ScreenWrapper>
             <View style={styles.container}>
@@ -43,8 +58,8 @@ const Home = () => {
                     </View>
 
                     <TransactionList
-                        data={[]}
-                        loading={false}
+                        data={recentTransactions}
+                        loading={transactionLoading}
                         emptyListMessage="No Transactions added yet!"
                         title="Recent Transaction"
                     />
