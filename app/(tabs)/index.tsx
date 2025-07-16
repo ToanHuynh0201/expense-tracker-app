@@ -14,102 +14,106 @@ import * as Icons from "phosphor-react-native";
 import React from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 const Home = () => {
-    const { user } = useAuth();
-    const router = useRouter();
-    const constraints = [
-        where("uid", "==", user?.uid),
-        orderBy("date", "desc"),
-        limit(30),
-    ];
+	const { user } = useAuth();
+	const router = useRouter();
 
-    const {
-        data: recentTransactions,
-        error,
-        loading: transactionLoading,
-    } = useFetchData<TransactionType>("transactions", constraints);
+	const constraints = [
+		where("uid", "==", user?.uid),
+		orderBy("date", "desc"),
+		limit(30),
+	];
 
-    return (
-        <ScreenWrapper>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <View style={{ gap: 4 }}>
-                        <Typo size={16} color={colors.neutral400}>
-                            Hello,
-                        </Typo>
-                        <Typo size={20} fontWeight={"500"}>
-                            {user?.name}
-                        </Typo>
-                    </View>
-                    <TouchableOpacity style={styles.searchIcon}>
-                        <Icons.MagnifyingGlass
-                            size={verticalScale(22)}
-                            color={colors.neutral200}
-                            weight="bold"
-                        ></Icons.MagnifyingGlass>
-                    </TouchableOpacity>
-                </View>
+	const {
+		data: recentTransactions,
+		error,
+		loading: transactionLoading,
+	} = useFetchData<TransactionType>("transactions", constraints);
 
-                <ScrollView
-                    contentContainerStyle={styles.scrollViewStyle}
-                    showsVerticalScrollIndicator={false}
-                >
-                    <View>
-                        <HomeCard></HomeCard>
-                    </View>
+	return (
+		<ScreenWrapper>
+			<View style={styles.container}>
+				<View style={styles.header}>
+					<View style={{ gap: 4 }}>
+						<Typo size={16} color={colors.neutral400}>
+							Hello,
+						</Typo>
+						<Typo size={20} fontWeight={"500"}>
+							{user?.name}
+						</Typo>
+					</View>
+					<TouchableOpacity
+						style={styles.searchIcon}
+						onPress={() => router.push("/(modals)/searchModal")}
+					>
+						<Icons.MagnifyingGlass
+							size={verticalScale(22)}
+							color={colors.neutral200}
+							weight="bold"
+						></Icons.MagnifyingGlass>
+					</TouchableOpacity>
+				</View>
 
-                    <TransactionList
-                        data={recentTransactions}
-                        loading={transactionLoading}
-                        emptyListMessage="No Transactions added yet!"
-                        title="Recent Transaction"
-                    />
-                </ScrollView>
+				<ScrollView
+					contentContainerStyle={styles.scrollViewStyle}
+					showsVerticalScrollIndicator={false}
+				>
+					<View>
+						<HomeCard></HomeCard>
+					</View>
 
-                <Button
-                    style={styles.floatingButton}
-                    onPress={() => router.push("/(modals)/transactionModal")}
-                >
-                    <Icons.Plus
-                        color={colors.black}
-                        weight="bold"
-                        size={verticalScale(24)}
-                    ></Icons.Plus>
-                </Button>
-            </View>
-        </ScreenWrapper>
-    );
+					<TransactionList
+						data={recentTransactions}
+						loading={transactionLoading}
+						emptyListMessage="No Transactions added yet!"
+						title="Recent Transaction"
+					/>
+				</ScrollView>
+
+				<Button
+					style={styles.floatingButton}
+					onPress={() => router.push("/(modals)/transactionModal")}
+				>
+					<Icons.Plus
+						color={colors.black}
+						weight="bold"
+						size={verticalScale(24)}
+					></Icons.Plus>
+				</Button>
+			</View>
+		</ScreenWrapper>
+	);
 };
 
 export default Home;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingHorizontal: spacingX._20,
-        marginTop: verticalScale(8),
-    },
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: spacingY._10,
-    },
-    searchIcon: {
-        backgroundColor: colors.neutral700,
-        padding: spacingX._10,
-        borderRadius: 50,
-    },
-    scrollViewStyle: {
-        marginTop: spacingY._10,
-        paddingBottom: verticalScale(100),
-        gap: spacingY._25,
-    },
-    floatingButton: {
-        height: verticalScale(50),
-        width: verticalScale(50),
-        borderRadius: 100,
-        position: "absolute",
-        bottom: verticalScale(30),
-        right: verticalScale(30),
-    },
+	container: {
+		flex: 1,
+		paddingHorizontal: spacingX._20,
+		marginTop: verticalScale(8),
+	},
+	header: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginBottom: spacingY._10,
+	},
+	searchIcon: {
+		backgroundColor: colors.neutral700,
+		padding: spacingX._10,
+		borderRadius: 50,
+	},
+	scrollViewStyle: {
+		marginTop: spacingY._10,
+		paddingBottom: verticalScale(100),
+		gap: spacingY._25,
+	},
+	floatingButton: {
+		height: verticalScale(50),
+		width: verticalScale(50),
+		borderRadius: 100,
+		position: "absolute",
+		bottom: verticalScale(30),
+		right: verticalScale(30),
+	},
 });
