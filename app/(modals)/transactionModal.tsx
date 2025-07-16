@@ -9,8 +9,10 @@ import { expenseCategories, transactionTypes } from "@/constants/data";
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
 import { useAuth } from "@/contexts/authContext";
 import useFetchData from "@/hooks/useFetchData";
-import { createOrUpdateTransaction } from "@/services/transactionService";
-import { deleteWallet } from "@/services/walletService";
+import {
+    createOrUpdateTransaction,
+    deleteTransaction,
+} from "@/services/transactionService";
 import { TransactionType, WalletType } from "@/types";
 import { scale, verticalScale } from "@/utils/styling";
 import DateTimePicker, {
@@ -19,7 +21,7 @@ import DateTimePicker, {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { orderBy, where } from "firebase/firestore";
 import * as Icons from "phosphor-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Alert,
     Platform,
@@ -31,6 +33,18 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 const TransactionModal = () => {
+    type paramType = {
+        id: string;
+        type: string;
+        amount: string;
+        category?: string;
+        date: string;
+        description?: string;
+        image?: any;
+        uid?: string;
+        walletId: string;
+    };
+
     const { user } = useAuth();
     const [transaction, setTransaction] = useState<TransactionType>({
         type: "expense",
@@ -54,9 +68,21 @@ const TransactionModal = () => {
     const router = useRouter();
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [loading, setLoading] = useState(false);
+    const oldTransaction: paramType = useLocalSearchParams();
 
-    const oldTransaction: { name: string; image: string; id: string } =
-        useLocalSearchParams();
+    useEffect(() => {
+        if (oldTransaction?.id) {
+            setTransaction({
+                type: oldTransaction?.type,
+                image: oldTransaction?.image,
+                amount: Number(oldTransaction.amount),
+                description: oldTransaction.description || "",
+                category: oldTransaction.category || "",
+                date: new Date(oldTransaction.date),
+                walletId: oldTransaction?.walletId,
+            });
+        }
+    }, []);
 
     const onDateChange = (
         event: DateTimePickerEvent,
@@ -66,6 +92,7 @@ const TransactionModal = () => {
         setTransaction({ ...transaction, date: currentDate });
         setShowDatePicker(false);
     };
+
     const onSubmit = async () => {
         const { type, amount, description, category, date, walletId, image } =
             transaction;
@@ -74,6 +101,7 @@ const TransactionModal = () => {
             Alert.alert("Transaction", "Please fill all the fields");
             return;
         }
+
         let transactionData: TransactionType = {
             type,
             amount,
@@ -81,9 +109,13 @@ const TransactionModal = () => {
             category,
             date,
             walletId,
-            image,
+            image: image ? image : null,
             uid: user?.uid,
         };
+
+        if (oldTransaction?.id) {
+            transactionData.id = oldTransaction.id;
+        }
 
         //todo: include transaction id for updating
         setLoading(true);
@@ -102,21 +134,24 @@ const TransactionModal = () => {
 
         setLoading(true);
 
-        const res = await deleteWallet(oldTransaction?.id);
+        const res = await deleteTransaction(
+            oldTransaction?.id,
+            oldTransaction?.walletId
+        );
 
         setLoading(false);
 
         if (res.success) {
             router.back();
         } else {
-            Alert.alert("Wallet", res.msg);
+            Alert.alert("Transaction", res.msg);
         }
     };
 
     const showDeleteAlert = () => {
         Alert.alert(
             "Confirm",
-            "Are you sure you want to delete? \n This action will remove all the transactions related to this wallet",
+            "Are you sure you want to delete this transaction",
             [
                 {
                     text: "Cancel",
@@ -372,7 +407,7 @@ const TransactionModal = () => {
                     style={{ flex: 1 }}
                 >
                     <Typo color={colors.black} fontWeight={"700"}>
-                        {oldTransaction?.id ? "Update Transaction" : "Submit"}
+                        {oldTransaction?.id ? "Update" : "Submit"}
                     </Typo>
                 </Button>
             </View>

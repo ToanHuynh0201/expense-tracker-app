@@ -111,7 +111,7 @@ const HomeCard = () => {
                                 color={colors.neutral700}
                                 fontWeight={"500"}
                             >
-                                Income
+                                Expenses
                             </Typo>
                         </View>
                         <View style={{ alignSelf: "center" }}>
